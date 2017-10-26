@@ -84,7 +84,7 @@ class MouldCapture(Frame):
         book_frame = Frame(self, relief='ridge')
         self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, height=20, wraplength=200)
         self.book_info.grid(row=0, column=0)
-        book_frame.grid(row=2, column=0, pady=5)
+        book_frame.grid(row=2, column=0, pady=5, rowspan=2)
 
         #Build the Mould capture frame
         #mould_frame = Frame(self,relief='ridge')
@@ -133,9 +133,10 @@ class MouldCapture(Frame):
         # identify when the listbox changes using the bind to <ListboxSelect> virtual event
 
         #TODO: Put exit and save in the mould_frame, but not on the canvas
-        #save_data = Button(mould_frame, text="Save", command=self.save_data)
-        #save_data_window = mould_book.create_window(350, 200, anchor=NW, window=save_data)
-        #exit_program = Button(mould_frame, text="Exit", command=self.exit_program).grid(row=6, column=20, padx=3)
+        close_frame = Frame(self,relief='ridge')
+        save_data = Button(close_frame, text="Save", command=self.save_data).grid(row=0, column=1, padx=40)
+        exit_program = Button(close_frame, text="Exit", command=self.exit_program).grid(row=0, column=2, padx=40)
+        close_frame.grid(row=3, column=1)
 
         # Put it all together on the screen
         self.pack(fill=BOTH, expand=NO)
