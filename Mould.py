@@ -56,12 +56,17 @@ class MouldCapture(Frame):
         self.front_board_mould = IntVar()
         self.rear_board_mould = IntVar()
         self.fore_edge_mould = IntVar()
+        self.label_text = StringVar()
+        self.label_text.set("Enter Book info")
 
+        self.saved = False
+        self.found = False
+        
         # Build the header row
         header_frame = Frame(self, relief='ridge')
         Label(header_frame, text="Mould Capture").grid(row=0, column=0, sticky=W, padx=10)
         Label(header_frame, text="Bostin Technology").grid(row=0, column=4, sticky=E, padx=10)
-        header_frame.grid(row=0)
+        header_frame.grid(row=0, columnspan=2)
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
@@ -73,12 +78,12 @@ class MouldCapture(Frame):
         self.position = Listbox(selection_frame, height=1, listvariable=self.current_position, selectmode=BROWSE)
         self.position.grid(row=1, column=3, padx=5)
         find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=4, padx=5)
-        selection_frame.grid(row=1, pady=5)
+        selection_frame.grid(row=1, pady=5, columnspan=2)
 
         # Build the book display frame and the selection part
         book_frame = Frame(self, relief='ridge')
-        self.book_info = Text(book_frame, relief='sunken', state=DISABLED, wrap=WORD)
-        self.book_info.grid(row=2, column=0)
+        self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, height=20, wraplength=200)
+        self.book_info.grid(row=0, column=0)
         book_frame.grid(row=2, column=0, pady=5)
 
         #Build the Mould capture frame
@@ -89,14 +94,15 @@ class MouldCapture(Frame):
         front_board_mould = Checkbutton(mould_frame, text="Front Board", variable=self.front_board_mould, onvalue=1, offvalue=0)
         rear_board_mould = Checkbutton(mould_frame, text="Rear Board", variable=self.rear_board_mould, onvalue=1, offvalue=0)
         fore_edge_mould = Checkbutton(mould_frame, text="Fore Edge", variable=self.fore_edge_mould, onvalue=1, offvalue=0)
-        head_mould.grid(row=0, column=3)
-        spine_mould.grid(row=3, column=0)
-        tail_mould.grid(row=5, column=2)
-        front_board_mould.grid(row=2, column=3)
-        rear_board_mould.grid(row=4, column=5)
-        fore_edge_mould.grid(row=3, column=4)
+        head_mould.grid(row=0, column=12, pady=10, padx=3)
+        spine_mould.grid(row=2, column=6, pady=10, padx=3)
+        tail_mould.grid(row=5, column=8, pady=10, padx=3)
+        front_board_mould.grid(row=2, column=12, pady=10, padx=3)
+        rear_board_mould.grid(row=4, column=16, pady=10, padx=3)
+        fore_edge_mould.grid(row=3, column=17, pady=10, padx=3)
         mould_frame.grid(row=2, column=1)
-        exit_program = Button(mould_frame, text="Exit", command=self.exit_program).grid(row=4, column=1, padx=5)
+        exit_program = Button(mould_frame, text="Exit", command=self.exit_program).grid(row=6, column=20, padx=3)
+        save_data = Button(mould_frame, text="Save", command=self.save_data).grid(row=6, column=0, padx=3)
 
         # Build the book canvas picture
 #        book_frame = Frame(self, relief='ridge')
@@ -138,12 +144,24 @@ class MouldCapture(Frame):
         """
         Using the data given, find the book in the list and populate the book info box
         """
+
+        if self.saved == False:
+            print("Data not saved, do you want to continue?")
+        
         logging.info("Finding the Book reference:%s" % (self.press.get(ACTIVE)))
         book_ref = self.press.get(ACTIVE) + '.' + self.shelf.get(ACTIVE) + '.' + self.position.get(ACTIVE)
      
         self.UpdateBookText("Finding Book:%s" % book_ref)
 
-        
+        if book_ref in self.booklist:
+            print(self.booklist[book_ref])
+            self.found = True
+            book_info = self.booklist[book_ref]['Location'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
+        else:
+            book_info = "Reference not found, please continue"
+            self.found = False
+
+        self.UpdateBookText(book_info)
         return
 
     def BookData(self, booklist):
@@ -162,10 +180,36 @@ class MouldCapture(Frame):
         #TODO: This currently adds the text to the existing text, not replace it
         
         logging.info("Text to be added into the Book Text Box:%s" % information)
-        self.book_info.config(state=NORMAL)
-        self.book_info.insert(END, information)
-        self.book_info.config(state=DISABLED)       
+        self.label_text.set(information)
+        return     
 
+    def save_data(self):
+        # called on click on save
+        # needs to capture the values annd save them to the csv file.
+
+        data_to_save = []
+        book_ref = self.press.get(ACTIVE) + '.' + self.shelf.get(ACTIVE) + '.' + self.position.get(ACTIVE)
+        data_to_save.append(book_ref)
+        data_to_save.append(self.head_mould.get())
+        data_to_save.append(self.spine_mould.get())
+        data_to_save.append(self.tail_mould.get())
+        data_to_save.append(self.front_board_mould.get())
+        data_to_save.append(self.rear_board_mould.get())
+        data_to_save.append(self.fore_edge_mould.get())
+        data_to_save.append(self.found)
+
+        logging.info("data to be saved to csv:%s" % data_to_save)
+
+        filename = SS.USB_LOCATION + '/' + SS.MOULDDATA_NAME
+        if os.path.exists(SS.USB_LOCATION):
+            logging.debug("[CTRL] Book File in location:%s" % filename)
+            with open(filename, mode='a', newline='') as csvfile:
+                    record = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    record.writerow(data_to_save)
+                
+            self.saved = True
+        return
+        
     def exit_program(self):
         # called form the capture button
         logging.debug("Exiting Program")
@@ -198,10 +242,16 @@ def LoadData():
     if os.path.isfile(filename):
         gbl_log.debug("[CTRL] Book File in location:%s" % filename)
         with open(filename, 'r') as book:
-            bookdata = csv.DictReader(book)
-            #BUG: bookdata is only accessible whilst the file is open and the line below therefore fails
-        for row in bookdata:
-            print(row['CMS'])
+            #bookdata = csv.DictReader(book)
+            for row in csv.DictReader(book):
+                # A row of data looks like
+                #{'Location': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS': '3045432',
+                    #'Title': 'The life and adventures of Martin Chuzzlewit. '}
+                bookdata[row['Location']] = row
+
+    else:
+        gbl_log.error("[CTRL] Unable to find book data, program aborted")
+        sys.exit()
     gbl_log.info("Book Data Loaded:%s" % bookdata)
     return bookdata
         

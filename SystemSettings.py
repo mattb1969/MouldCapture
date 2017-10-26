@@ -27,6 +27,7 @@ Contains all the system settings required to be used
 
 USB_LOCATION = '/media/pi/BTC_STICK'
 BOOKFILE_NAME = 'BookList.csv'
+MOULDDATA_NAME = "Moulddata.csv"
 
 PRESS_LIST = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U',
                 'V','W','X','Y','Z','Mus']
