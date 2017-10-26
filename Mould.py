@@ -107,17 +107,35 @@ class MouldCapture(Frame):
         # Build the book canvas picture
         mould_frame = Frame(self, relief='ridge')
         mould_book = Canvas(mould_frame, width=350, height=200, background='#ffffff')
-        mould_book.create_rectangle(10, 10, 50, 50, fill="blue")
+        mould_book.create_polygon(130,40,230,50,220,170,120,160, outline="blue", fill="")
+        mould_book.create_line(130,40,120,35,110,155,120,160, fill="blue")
+        mould_book.create_line(120,35,220,45,230,50, fill="blue")
+        mould_book.create_arc(190,125,290,190,outline="red",style="arc")
+        #mould_book.create_rectangle(100, 50, 250, 175, fill="blue")
 
         head_mould = Checkbutton(mould_book, text="Head", variable=self.head_mould, onvalue=1, offvalue=0)
-        #head_mould.place(relx=5, rely=5)
-        #head_mould.pack()
-        head_mould_window = mould_book.create_window(10, 10, anchor=NW, window=head_mould)
+        spine_mould = Checkbutton(mould_book, text="Spine", variable=self.spine_mould, onvalue=1, offvalue=0)
+        tail_mould = Checkbutton(mould_book, text="Tail", variable=self.tail_mould, onvalue=1, offvalue=0)
+        front_board_mould = Checkbutton(mould_book, text="Front", variable=self.front_board_mould, onvalue=1, offvalue=0)
+        rear_board_mould = Checkbutton(mould_book, text="Rear", variable=self.rear_board_mould, onvalue=1, offvalue=0)
+        fore_edge_mould = Checkbutton(mould_book, text="Fore", variable=self.fore_edge_mould, onvalue=1, offvalue=0)
+        
+        head_mould_window = mould_book.create_window(150, 10, anchor=NW, window=head_mould)
+        spine_mould_window = mould_book.create_window(20, 70, anchor=NW, window=spine_mould)
+        tail_mould_window = mould_book.create_window(150, 180, anchor=NW, window=tail_mould)
+        front_board_mould_window = mould_book.create_window(150, 90, anchor=NW, window=front_board_mould)
+        rear_board_mould_window = mould_book.create_window(275, 170, anchor=NW, window=rear_board_mould)
+        fore_edge_mould_window = mould_book.create_window(270, 100, anchor=NW, window=fore_edge_mould)
         mould_book.pack()
 
         mould_frame.grid(row=2, column=1)
 
         # identify when the listbox changes using the bind to <ListboxSelect> virtual event
+
+        #TODO: Put exit and save in the mould_frame, but not on the canvas
+        #save_data = Button(mould_frame, text="Save", command=self.save_data)
+        #save_data_window = mould_book.create_window(350, 200, anchor=NW, window=save_data)
+        #exit_program = Button(mould_frame, text="Exit", command=self.exit_program).grid(row=6, column=20, padx=3)
 
         # Put it all together on the screen
         self.pack(fill=BOTH, expand=NO)
