@@ -29,6 +29,7 @@
 #  
 #  
 from tkinter import *
+from tkinter.ttk import *
 import logging
 import logging.config
 import dict_Logging
@@ -45,9 +46,9 @@ class MouldCapture(Frame):
         Frame.__init__(self,master)
 
         # These are the tuples of what is selected in the listbox
-        self.current_press = []
-        self.current_shelf = []
-        self.current_position = []
+        self.current_press = StringVar()
+        self.current_shelf = StringVar()
+        self.current_position = StringVar()
 
         #These are the check boxes
         self.head_mould = IntVar()
@@ -71,38 +72,20 @@ class MouldCapture(Frame):
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
         user = Button(selection_frame, text="User", command=self.user).grid(row=1, column=0, padx=5)
-        self.press = Listbox(selection_frame, height=1, listvariable=self.current_press, selectmode=SINGLE )
+        self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, state="readonly", values=SS.PRESS_LIST)
         self.press.grid(row=1, column=1, padx=5)
-        self.shelf = Listbox(selection_frame, height=1, listvariable=self.current_shelf, selectmode=BROWSE)
+        self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, state="readonly", values=SS.SHELF_LIST)
         self.shelf.grid(row=1, column=2, padx=5)
-        self.position = Listbox(selection_frame, height=1, listvariable=self.current_position, selectmode=BROWSE)
+        self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, state="readonly", values=SS.POSITION_LIST)
         self.position.grid(row=1, column=3, padx=5)
         find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=4, padx=5)
         selection_frame.grid(row=1, pady=5, columnspan=2)
 
         # Build the book display frame and the selection part
         book_frame = Frame(self, relief='ridge')
-        self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, height=20, wraplength=200)
+        self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
         self.book_info.grid(row=0, column=0)
         book_frame.grid(row=2, column=0, pady=5, rowspan=2)
-
-        #Build the Mould capture frame
-        #mould_frame = Frame(self,relief='ridge')
-        #head_mould = Checkbutton(mould_frame, text="Head", variable=self.head_mould, onvalue=1, offvalue=0)
-        #spine_mould = Checkbutton(mould_frame, text="Spine", variable=self.spine_mould, onvalue=1, offvalue=0)
-        #tail_mould = Checkbutton(mould_frame, text="Tail", variable=self.tail_mould, onvalue=1, offvalue=0)
-        #front_board_mould = Checkbutton(mould_frame, text="Front Board", variable=self.front_board_mould, onvalue=1, offvalue=0)
-        #rear_board_mould = Checkbutton(mould_frame, text="Rear Board", variable=self.rear_board_mould, onvalue=1, offvalue=0)
-        #fore_edge_mould = Checkbutton(mould_frame, text="Fore Edge", variable=self.fore_edge_mould, onvalue=1, offvalue=0)
-        #head_mould.grid(row=0, column=12, pady=10, padx=3)
-        #spine_mould.grid(row=2, column=6, pady=10, padx=3)
-        #tail_mould.grid(row=5, column=8, pady=10, padx=3)
-        #front_board_mould.grid(row=2, column=12, pady=10, padx=3)
-        #rear_board_mould.grid(row=4, column=16, pady=10, padx=3)
-        #fore_edge_mould.grid(row=3, column=17, pady=10, padx=3)
-        #exit_program = Button(mould_frame, text="Exit", command=self.exit_program).grid(row=6, column=20, padx=3)
-        #save_data = Button(mould_frame, text="Save", command=self.save_data).grid(row=6, column=0, padx=3)
-        #mould_frame.grid(row=2, column=1)
         
         # Build the book canvas picture
         mould_frame = Frame(self, relief='ridge')
@@ -140,21 +123,6 @@ class MouldCapture(Frame):
 
         # Put it all together on the screen
         self.pack(fill=BOTH, expand=NO)
-
-        # Populate the drop downs
-        for f in SS.PRESS_LIST:
-            self.press.insert(END, f)
-
-        for f in SS.SHELF_LIST:
-            self.shelf.insert(END, f)
-        
-        for f in SS.POSITION_LIST:
-            self.position.insert(END, f)
-
-        # Set initial selection
-        self.position.select_set(0)
-        self.shelf.select_set(0)
-        self.press.select_set(0)
                     
         self.UpdateBookText("Please Select a Press, Row and shelf then click on Find")
 
@@ -164,6 +132,14 @@ class MouldCapture(Frame):
         logging.debug("Selecting User")
         return
 
+    def not_saved(self):
+        """
+        this function is called if the user has selected to leave data unsaved
+        returns true if it is ok, false if rejected.
+        """
+        #TODO: Need to add pop up box to ask if continue without saving?
+        
+
     def find_book(self):
         """
         Using the data given, find the book in the list and populate the book info box
@@ -171,9 +147,10 @@ class MouldCapture(Frame):
 
         if self.saved == False:
             print("Data not saved, do you want to continue?")
+            self.not_saved()
         
-        logging.info("Finding the Book reference:%s" % (self.press.get(ACTIVE)))
-        book_ref = self.press.get(ACTIVE) + '.' + self.shelf.get(ACTIVE) + '.' + self.position.get(ACTIVE)
+        logging.info("Finding the Book reference:%s" % (self.press.get()))
+        book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
      
         self.UpdateBookText("Finding Book:%s" % book_ref)
 
@@ -212,7 +189,7 @@ class MouldCapture(Frame):
         # needs to capture the values annd save them to the csv file.
 
         data_to_save = []
-        book_ref = self.press.get(ACTIVE) + '.' + self.shelf.get(ACTIVE) + '.' + self.position.get(ACTIVE)
+        book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
         data_to_save.append(book_ref)
         data_to_save.append(self.head_mould.get())
         data_to_save.append(self.spine_mould.get())
