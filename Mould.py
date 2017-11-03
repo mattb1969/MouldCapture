@@ -91,7 +91,7 @@ class MouldCapture(Frame):
         # Build the book display frame and the selection part
         book_frame = Frame(self, relief='ridge')
         #self.date = C(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
-        self.book_info.grid(row=1, column=0)
+        #self.book_info.grid(row=1, column=0)
         self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
         self.book_info.grid(row=1, column=0)
         book_frame.grid(row=2, column=0, pady=5, rowspan=2)
