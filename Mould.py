@@ -36,7 +36,6 @@
 
 from tkinter import *
 from tkinter.ttk import *
-import tkMessageBox
 import logging
 import logging.config
 import dict_Logging
@@ -148,7 +147,7 @@ class MouldCapture(Frame):
         returns true if it is ok, false if rejected.
         """
         #TODO: Need to add pop up box to ask if continue without saving?
-        tkMessageBox.showinfo("Not Saved", "The current infirmation is not saved, do you wish to continue?")
+        messagebox.showinfo("Not Saved", "The current infirmation is not saved, do you wish to continue?")
 
         return
 
