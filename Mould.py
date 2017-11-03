@@ -36,6 +36,7 @@
 
 from tkinter import *
 from tkinter.ttk import *
+import tkMessageBox
 import logging
 import logging.config
 import dict_Logging
@@ -77,13 +78,13 @@ class MouldCapture(Frame):
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
-        self.user = Combobox(selection_frame, height=10, textvariable=self.user, values=SS.USERS)
+        self.user = Combobox(selection_frame, height=10, textvariable=self.user, width=10,values=SS.USERS)
         self.user.grid(row=1, column=0, padx=5)
-        self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, state="readonly", values=SS.PRESS_LIST)
+        self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, state="readonly", values=SS.PRESS_LIST)
         self.press.grid(row=1, column=1, padx=5)
-        self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, state="readonly", values=SS.SHELF_LIST)
+        self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, width=10, state="readonly", values=SS.SHELF_LIST)
         self.shelf.grid(row=1, column=2, padx=5)
-        self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, state="readonly", values=SS.POSITION_LIST)
+        self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, width=10, state="readonly", values=SS.POSITION_LIST)
         self.position.grid(row=1, column=3, padx=5)
         find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=4, padx=5)
         selection_frame.grid(row=1, pady=5, columnspan=2)
