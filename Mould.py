@@ -27,7 +27,13 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
+#
+
+#TODO: After save, clear all the mould settings
+#TODO: Show the date on screen
+#TODO: Make all the buttons bigger
+#TODO: Add descriptions to whatn is held in the text box, e.g. Location: Title: Creator:
+
 from tkinter import *
 from tkinter.ttk import *
 import logging
@@ -71,7 +77,8 @@ class MouldCapture(Frame):
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
-        user = Button(selection_frame, text="User", command=self.user).grid(row=1, column=0, padx=5)
+        self.user = Combobox(selection_frame, height=10, textvariable=self.user, values=SS.USERS)
+        self.user.grid(row=1, column=0, padx=5)
         self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, state="readonly", values=SS.PRESS_LIST)
         self.press.grid(row=1, column=1, padx=5)
         self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, state="readonly", values=SS.SHELF_LIST)
@@ -83,8 +90,10 @@ class MouldCapture(Frame):
 
         # Build the book display frame and the selection part
         book_frame = Frame(self, relief='ridge')
+        #self.date = C(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
+        self.book_info.grid(row=1, column=0)
         self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
-        self.book_info.grid(row=0, column=0)
+        self.book_info.grid(row=1, column=0)
         book_frame.grid(row=2, column=0, pady=5, rowspan=2)
         
         # Build the book canvas picture
@@ -138,7 +147,9 @@ class MouldCapture(Frame):
         returns true if it is ok, false if rejected.
         """
         #TODO: Need to add pop up box to ask if continue without saving?
-        
+        tkMessageBox.showinfo("Not Saved", "The current infirmation is not saved, do you wish to continue?")
+
+        return
 
     def find_book(self):
         """
