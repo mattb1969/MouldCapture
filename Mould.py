@@ -266,7 +266,7 @@ class MouldCapture(Frame):
         filename = SS.USB_LOCATION + '/' + SS.MOULDDATA_NAME
         if os.path.exists(SS.USB_LOCATION):
             logging.debug("[CTRL] Book File in location:%s" % filename)
-            if os.path.isfile(filename) = False:
+            if os.path.isfile(filename) == False:
                 # File doesn't exist, create header row
                 write_header = True
             with open(filename, mode='a', newline='') as csvfile:
