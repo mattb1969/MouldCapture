@@ -320,7 +320,6 @@ def LoadData():
                 #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
                     #'Title': 'The life and adventures of Martin Chuzzlewit. '}
                 bookdata[row['Primary other number']] = row
-                print("Row Imported:%s" % row)
 
     else:
         gbl_log.error("[CTRL] Unable to find book data, program aborted")
