@@ -272,7 +272,9 @@ def main():
     SetupLogging()
 
     root = Tk()
+
     app = MouldCapture(master=root)
+    root.geometry("700x350")
     app.master.title("Mould Capturing Tool")
     app.BookData(LoadData())
     # do something here
