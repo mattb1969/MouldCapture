@@ -187,7 +187,7 @@ class MouldCapture(Frame):
         gbl_log.debug("Current User:%s" % self.user.get())
         gbl_log.debug("Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
 
-        if check_data_entered() == False:
+        if self.check_data_entered() == False:
             return
             
         if self.saved == False and self.warned == False:
@@ -237,7 +237,7 @@ class MouldCapture(Frame):
         # called on click on save
         # needs to capture the values annd save them to the csv file.
 
-        if check_data_entered() == False:
+        if self.check_data_entered() == False:
             return
             
         if len(self.user.get()) < 1:
