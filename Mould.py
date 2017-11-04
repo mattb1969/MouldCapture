@@ -203,7 +203,7 @@ class MouldCapture(Frame):
         if book_ref in self.booklist:
             gbl_log.info(self.booklist[book_ref])
             self.found = True
-            book_info = self.booklist[book_ref]['Location'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
+            book_info = self.booklist[book_ref]['Primary other number'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
         else:
             book_info = "Reference not found, please record details and continue"
             self.found = False
