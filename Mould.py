@@ -271,7 +271,7 @@ class MouldCapture(Frame):
                 write_header = True
             with open(filename, mode='a', newline='') as csvfile:
                     record = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    if write_header = True:
+                    if write_header == True:
                         record.writerow(header)
                         write_header=False
                     record.writerow(data_to_save)
