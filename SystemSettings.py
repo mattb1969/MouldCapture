@@ -25,7 +25,7 @@ Contains all the system settings required to be used
 
 """
 
-USB_LOCATION = '/media/pi/NT_Mould'
+USB_LOCATION = '/media/pi/NT_MOULD'
 BOOKFILE_NAME = 'BookList.csv'
 MOULDDATA_NAME = "Moulddata.csv"
 
