@@ -313,13 +313,14 @@ def LoadData():
     filename = SS.USB_LOCATION + '/' + SS.BOOKFILE_NAME
     if os.path.isfile(filename):
         gbl_log.debug("[CTRL] Book File in location:%s" % filename)
-        with open(filename, 'r') as book:
+        with open(filename, 'r', errors='replace') as book:
             #bookdata = csv.DictReader(book)
             for row in csv.DictReader(book):
                 # A row of data looks like
                 #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
                     #'Title': 'The life and adventures of Martin Chuzzlewit. '}
                 bookdata[row['Primary other number']] = row
+                print("Row Imported:%s" % row)
 
     else:
         gbl_log.error("[CTRL] Unable to find book data, program aborted")
