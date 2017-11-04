@@ -51,10 +51,15 @@ class MouldCapture(Frame):
     def __init__(self, master=None):
         Frame.__init__(self,master)
 
+        gbl_log.info("Starting Main Frame")
         # These are the tuples of what is selected in the listbox
         self.current_press = StringVar()
         self.current_shelf = StringVar()
         self.current_position = StringVar()
+        self.current_day = StringVar()
+        self.current_month = StringVar()
+        self.current_year = StringVar()
+        self.user = StringVar()
 
         #These are the check boxes
         self.head_mould = IntVar()
@@ -66,44 +71,52 @@ class MouldCapture(Frame):
         self.label_text = StringVar()
         self.label_text.set("Enter Book info")
 
-        self.saved = False
+        self.saved = True
         self.found = False
-        
-        # Build the header row
-        header_frame = Frame(self, relief='ridge')
-        Label(header_frame, text="Mould Capture").grid(row=0, column=0, sticky=W, padx=10)
-        Label(header_frame, text="Bostin Technology").grid(row=0, column=4, sticky=E, padx=10)
-        header_frame.grid(row=0, columnspan=2)
+        self.warned = False
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
-        self.user = Combobox(selection_frame, height=10, textvariable=self.user, width=10,values=SS.USERS)
-        self.user.grid(row=1, column=0, padx=5)
-        self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, state="readonly", values=SS.PRESS_LIST)
-        self.press.grid(row=1, column=1, padx=5)
-        self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, width=10, state="readonly", values=SS.SHELF_LIST)
-        self.shelf.grid(row=1, column=2, padx=5)
-        self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, width=10, state="readonly", values=SS.POSITION_LIST)
-        self.position.grid(row=1, column=3, padx=5)
-        find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=4, padx=5)
-        selection_frame.grid(row=1, pady=5, columnspan=2)
+        self.user = Combobox(selection_frame, height=20, textvariable=self.user, width=20,values=SS.USERS)
+        self.user.grid(row=1, column=0, padx=50)
+        self.press = Combobox(selection_frame, height=20, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
+        self.press.grid(row=1, column=2, padx=10)
+        self.shelf = Combobox(selection_frame, height=20, textvariable=self.current_shelf, width=10, values=SS.SHELF_LIST)
+        self.shelf.grid(row=1, column=3, padx=10)
+        self.position = Combobox(selection_frame, height=20, textvariable=self.current_position, width=10, values=SS.POSITION_LIST)
+        self.position.grid(row=1, column=4, padx=10)
+        find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=5, padx=20)
+        selection_frame.grid(row=0, pady=10, columnspan=2)
 
+        # Date Frame
+        date_frame = Frame(self, relief='ridge')
+        self.date_info = Label(date_frame, relief='sunken', text="Today's Date")
+        self.date_info.grid(row=0, column=0)
+        self.day = Combobox(date_frame, textvariable=self.current_day, width=5, values=SS.DAYS)
+        self.day.grid(row=1, column=0)
+        self.month = Combobox(date_frame, textvariable=self.current_month, width=5, values=SS.MONTHS)
+        self.month.grid(row=1, column=1)
+        self.year = Combobox(date_frame, textvariable=self.current_year, width=5, values=SS.YEARS)
+        self.year.grid(row=1, column=2)
+        date_frame.grid(row=1, column=0)
+        
         # Build the book display frame and the selection part
         book_frame = Frame(self, relief='ridge')
-        #self.date = C(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
-        #self.book_info.grid(row=1, column=0)
         self.book_info = Label(book_frame, relief='sunken', text="Enter Book Info", textvariable=self.label_text, width=30, wraplength=200)
-        self.book_info.grid(row=1, column=0)
-        book_frame.grid(row=2, column=0, pady=5, rowspan=2)
+        self.book_info.grid(row=0, column=0)
+        book_frame.grid(row=2, column=0, pady=10)#, rowspan=4)
         
         # Build the book canvas picture
         mould_frame = Frame(self, relief='ridge')
-        mould_book = Canvas(mould_frame, width=350, height=200, background='#ffffff')
-        mould_book.create_polygon(130,40,230,50,220,170,120,160, outline="blue", fill="")
-        mould_book.create_line(130,40,120,35,110,155,120,160, fill="blue")
-        mould_book.create_line(120,35,220,45,230,50, fill="blue")
-        mould_book.create_arc(190,125,290,190,outline="red",style="arc")
-        #mould_book.create_rectangle(100, 50, 250, 175, fill="blue")
+        mould_book = Canvas(mould_frame, width=450, height=300, background='#ffffff')
+        mould_book.create_polygon(140,60,290,75,280,240,130,225, outline="blue", fill="")
+        mould_book.create_line(140,60,130,45,120,210,130,225, fill="blue")          # spine line
+        mould_book.create_line(128,78,138,93, fill="lightblue")          # across spine line upper
+        mould_book.create_line(126,111,136,126, fill="green")          # across spine line upper middle
+        mould_book.create_line(124,144,134,159, fill="brown")          # across spine linelower middle
+        mould_book.create_line(122,177,132,192, fill="lightgreen")          # across spine line lower
+        mould_book.create_line(130,45,280,60,290,75, fill="blue")                   # top line
+        mould_book.create_arc(220,185,360,275,outline="red",style="arc")
 
         head_mould = Checkbutton(mould_book, text="Head", variable=self.head_mould, onvalue=1, offvalue=0)
         spine_mould = Checkbutton(mould_book, text="Spine", variable=self.spine_mould, onvalue=1, offvalue=0)
@@ -112,15 +125,15 @@ class MouldCapture(Frame):
         rear_board_mould = Checkbutton(mould_book, text="Rear", variable=self.rear_board_mould, onvalue=1, offvalue=0)
         fore_edge_mould = Checkbutton(mould_book, text="Fore", variable=self.fore_edge_mould, onvalue=1, offvalue=0)
         
-        head_mould_window = mould_book.create_window(150, 10, anchor=NW, window=head_mould)
-        spine_mould_window = mould_book.create_window(20, 70, anchor=NW, window=spine_mould)
-        tail_mould_window = mould_book.create_window(150, 180, anchor=NW, window=tail_mould)
-        front_board_mould_window = mould_book.create_window(150, 90, anchor=NW, window=front_board_mould)
-        rear_board_mould_window = mould_book.create_window(275, 170, anchor=NW, window=rear_board_mould)
-        fore_edge_mould_window = mould_book.create_window(270, 100, anchor=NW, window=fore_edge_mould)
+        head_mould_window = mould_book.create_window(175, 10, anchor=NW, window=head_mould)
+        spine_mould_window = mould_book.create_window(40, 140, anchor=NW, window=spine_mould)
+        tail_mould_window = mould_book.create_window(180, 250, anchor=NW, window=tail_mould)
+        front_board_mould_window = mould_book.create_window(160, 140, anchor=NW, window=front_board_mould)
+        rear_board_mould_window = mould_book.create_window(335, 225, anchor=NW, window=rear_board_mould)
+        fore_edge_mould_window = mould_book.create_window(330, 120, anchor=NW, window=fore_edge_mould)
         mould_book.pack()
 
-        mould_frame.grid(row=2, column=1)
+        mould_frame.grid(row=1, column=1, rowspan=2)
 
         # identify when the listbox changes using the bind to <ListboxSelect> virtual event
 
@@ -133,46 +146,73 @@ class MouldCapture(Frame):
         # Put it all together on the screen
         self.pack(fill=BOTH, expand=NO)
                     
-        self.UpdateBookText("Please Select a Press, Row and shelf then click on Find")
+        self.UpdateBookText("Please Select a User and a Date")
 
-
-    def user(self):
-        # called form the capture button
-        logging.debug("Selecting User")
+    def clear_checkboxes(self):
+        """
+        Reset all the checkboxes to un-checked.
+        """
+        self.head_mould.set(0)
+        self.spine_mould.set(0)
+        self.tail_mould.set(0)
+        self.front_board_mould.set(0)
+        self.rear_board_mould.set(0)
+        self.fore_edge_mould.set(0)
         return
 
-    def not_saved(self):
+    def check_data_entered(self):
         """
-        this function is called if the user has selected to leave data unsaved
-        returns true if it is ok, false if rejected.
+        Check the necessary fields have been entered
         """
-        #TODO: Need to add pop up box to ask if continue without saving?
-        messagebox.showinfo("Not Saved", "The current infirmation is not saved, do you wish to continue?")
+        if len(self.user.get()) < 1:
+            self.UpdateBookText("Please Select a User")
+            return False
+            
+        if len(self.day.get()) < 1 or len(self.month.get()) < 1 or len(self.year.get()) < 1:
+            self.UpdateBookText("Please Select a Date")
+            return False
+            
+        if len(self.press.get()) < 1 or len(self.shelf.get()) < 1 or len(self.position.get()) < 1:
+            self.UpdateBookText("Please select a press, shelf and row first")
+            return False
 
-        return
+        return True
+
 
     def find_book(self):
         """
         Using the data given, find the book in the list and populate the book info box
         """
+        gbl_log.info("Finding a book")
+        gbl_log.debug("Current User:%s" % self.user.get())
+        gbl_log.debug("Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
 
-        if self.saved == False:
-            print("Data not saved, do you want to continue?")
-            self.not_saved()
-        
+        if check_data_entered() == False:
+            return
+            
+        if self.saved == False and self.warned == False:
+            self.UpdateBookText("Data not saved, press button again to continue.   Or press Save")
+            self.warned = True
+            return
+
         logging.info("Finding the Book reference:%s" % (self.press.get()))
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
      
         self.UpdateBookText("Finding Book:%s" % book_ref)
 
         if book_ref in self.booklist:
-            print(self.booklist[book_ref])
+            gbl_log.info(self.booklist[book_ref])
             self.found = True
             book_info = self.booklist[book_ref]['Location'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
         else:
-            book_info = "Reference not found, please continue"
+            book_info = "Reference not found, please record details and continue"
             self.found = False
 
+        self.warned = False     # reset it back for the next time
+        self.saved= False
+
+        self.clear_checkboxes()
+        
         self.UpdateBookText(book_info)
         return
 
@@ -188,9 +228,7 @@ class MouldCapture(Frame):
         """
         Repalce the existing text in the book text box and reaplce it with information
         """
-
-        #TODO: This currently adds the text to the existing text, not replace it
-        
+       
         logging.info("Text to be added into the Book Text Box:%s" % information)
         self.label_text.set(information)
         return     
@@ -199,6 +237,15 @@ class MouldCapture(Frame):
         # called on click on save
         # needs to capture the values annd save them to the csv file.
 
+        if check_data_entered() == False:
+            return
+            
+        if len(self.user.get()) < 1:
+            self.UpdateBookText("Please Select a User")
+
+        if len(self.day.get()) < 1 or len(self.month.get()) < 1 or len(self.year.get()) < 1:
+            self.UpdateBookText("Please Select a Date")
+        
         data_to_save = []
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
         data_to_save.append(book_ref)
@@ -209,17 +256,30 @@ class MouldCapture(Frame):
         data_to_save.append(self.rear_board_mould.get())
         data_to_save.append(self.fore_edge_mould.get())
         data_to_save.append(self.found)
+        data_to_save.append(self.user.get())
+        data_to_save.append(self.day.get()+"/"+self.month.get()+"/"+self.year.get())
 
-        logging.info("data to be saved to csv:%s" % data_to_save)
+        logging.info("Data to be saved to csv:%s" % data_to_save)
 
+        write_header = False
+        header = ["Primary other number", "Head", "Spine", "Tail", "Front", "Rear", "Fore", "Found", "User", "Date"]
         filename = SS.USB_LOCATION + '/' + SS.MOULDDATA_NAME
         if os.path.exists(SS.USB_LOCATION):
             logging.debug("[CTRL] Book File in location:%s" % filename)
+            if os.path.isfile(filename) = False:
+                # File doesn't exist, create header row
+                write_header = True
             with open(filename, mode='a', newline='') as csvfile:
                     record = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    if write_header = True:
+                        record.writerow(header)
+                        write_header=False
                     record.writerow(data_to_save)
                 
             self.saved = True
+
+        self.clear_checkboxes()
+        
         return
         
     def exit_program(self):
@@ -257,14 +317,14 @@ def LoadData():
             #bookdata = csv.DictReader(book)
             for row in csv.DictReader(book):
                 # A row of data looks like
-                #{'Location': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS': '3045432',
+                #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
                     #'Title': 'The life and adventures of Martin Chuzzlewit. '}
-                bookdata[row['Location']] = row
+                bookdata[row['Primary other number']] = row
 
     else:
         gbl_log.error("[CTRL] Unable to find book data, program aborted")
         sys.exit()
-    gbl_log.info("Book Data Loaded:%s" % bookdata)
+    gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
     return bookdata
         
 def main():
@@ -274,7 +334,7 @@ def main():
     root = Tk()
 
     app = MouldCapture(master=root)
-    root.geometry("700x350")
+    root.geometry("800x410")
     app.master.title("Mould Capturing Tool")
     app.BookData(LoadData())
     # do something here

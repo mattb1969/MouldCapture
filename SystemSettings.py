@@ -25,7 +25,7 @@ Contains all the system settings required to be used
 
 """
 
-USB_LOCATION = '/media/pi/BTC_STICK'
+USB_LOCATION = '/media/pi/NT_Mould'
 BOOKFILE_NAME = 'BookList.csv'
 MOULDDATA_NAME = "Moulddata.csv"
 
@@ -44,4 +44,9 @@ POSITION_LIST = ['1','2','3','4','5','6','7','8','9',
                     '90','91','92','93','94','95','96','97','98','99']
 
 USERS = ['User1', 'User2', 'User3', 'User4', 'User5', 'User6', 'User7', 'User8', 'User9', 'User10']
- 
+
+DAYS = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19',
+                '20','21','22','23','24','25','26','27','28','29','30','31']
+MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec']
+
+YEARS = ['2017','2018']
