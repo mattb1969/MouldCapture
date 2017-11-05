@@ -77,13 +77,13 @@ class MouldCapture(Frame):
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
-        self.user = Combobox(selection_frame, height=20, textvariable=self.user, width=20,values=SS.USERS)
+        self.user = Combobox(selection_frame, height=10, textvariable=self.user, width=20, values=SS.USERS)
         self.user.grid(row=1, column=0, padx=50)
-        self.press = Combobox(selection_frame, height=20, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
+        self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
         self.press.grid(row=1, column=2, padx=10)
-        self.shelf = Combobox(selection_frame, height=20, textvariable=self.current_shelf, width=10, values=SS.SHELF_LIST)
+        self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, width=10, values=SS.SHELF_LIST)
         self.shelf.grid(row=1, column=3, padx=10)
-        self.position = Combobox(selection_frame, height=20, textvariable=self.current_position, width=10, values=SS.POSITION_LIST)
+        self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, width=10, values=SS.POSITION_LIST)
         self.position.grid(row=1, column=4, padx=10)
         find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=5, padx=20)
         selection_frame.grid(row=0, pady=10, columnspan=2)
@@ -92,11 +92,11 @@ class MouldCapture(Frame):
         date_frame = Frame(self, relief='ridge')
         self.date_info = Label(date_frame, relief='sunken', text="Today's Date")
         self.date_info.grid(row=0, column=0)
-        self.day = Combobox(date_frame, textvariable=self.current_day, width=5, values=SS.DAYS)
+        self.day = Combobox(date_frame, textvariable=self.current_day, width=5, height=10, values=SS.DAYS)
         self.day.grid(row=1, column=0)
-        self.month = Combobox(date_frame, textvariable=self.current_month, width=5, values=SS.MONTHS)
+        self.month = Combobox(date_frame, textvariable=self.current_month, width=8, height=5, values=SS.MONTHS)
         self.month.grid(row=1, column=1)
-        self.year = Combobox(date_frame, textvariable=self.current_year, width=5, values=SS.YEARS)
+        self.year = Combobox(date_frame, textvariable=self.current_year, width=8, height=5, values=SS.YEARS)
         self.year.grid(row=1, column=2)
         date_frame.grid(row=1, column=0)
         
@@ -332,7 +332,9 @@ def main():
     SetupLogging()
 
     root = Tk()
-
+    text_font = ('TkDefault', '20')
+    root.option_add('*TCombobox*Listbox.font', text_font)
+    #root.option_add('*TCombobox*Height', 20)
     app = MouldCapture(master=root)
     root.geometry("800x410")
     app.master.title("Mould Capturing Tool")
