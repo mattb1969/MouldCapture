@@ -178,7 +178,7 @@ class MouldCapture(Frame):
             gbl_log.error("[CTRL] Unable to find book data, program aborted")
             self.UpdateBookText("Unable to load book data. Check the USB stick is inserted and retry")
             return
-        gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
+        gbl_log.info("Number of Book Data Records Loaded:%s" % len(self.booklist))
         return
         
     def reset_find(self, event):
