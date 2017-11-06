@@ -61,6 +61,8 @@ class MouldCapture(Frame):
         self.current_year = StringVar()
         self.user = StringVar()
 
+        self.booklist = {}
+
         #These are the check boxes
         self.head_mould = IntVar()
         self.spine_mould = IntVar()
@@ -83,10 +85,13 @@ class MouldCapture(Frame):
         self.user.bind("<<ComboboxSelected>>", self.reset_find)
         self.user.grid(row=1, column=1, padx=30)
         self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
+        self.press.bind("<<ComboboxSelected>>", self.reset_find)
         self.press.grid(row=1, column=2, padx=10)
         self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, width=10, values=SS.SHELF_LIST)
+        self.shelf.bind("<<ComboboxSelected>>", self.reset_find)
         self.shelf.grid(row=1, column=3, padx=10)
         self.position = Combobox(selection_frame, height=10, textvariable=self.current_position, width=10, values=SS.POSITION_LIST)
+        self.position.bind("<<ComboboxSelected>>", self.reset_find)
         self.position.grid(row=1, column=4, padx=10)
         find_selection = Button(selection_frame, text='Find', command=self.find_book).grid(row=1, column=5, padx=20)
         selection_frame.grid(row=0, pady=10, columnspan=2)
@@ -152,12 +157,11 @@ class MouldCapture(Frame):
         self.UpdateBookText("Please Select a User and a Date")
 
     def load_bookdata(self):
-        if len(self.booklist) > 1:
-            UpdateBookText("Booklist already loaded, unable to reload, please reboot to reload")
+        if len(self.booklist) > 10:
+            self.UpdateBookText("Booklist already loaded, unable to reload, please reboot to reload")
             return
-        UpdateBookText("Loading Book Data")
-        self.booklist = {}
-        print("Loading Book Data")
+        self.UpdateBookText("Loading Book Data")
+
         gbl_log.info("[CTRL] Reading the book data")
         filename = SS.USB_LOCATION + '/' + SS.BOOKFILE_NAME
         if os.path.isfile(filename):
@@ -169,11 +173,11 @@ class MouldCapture(Frame):
                     #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
                         #'Title': 'The life and adventures of Martin Chuzzlewit. '}
                     self.booklist[row['Primary other number']] = row
-            UpdateBookText("Book data has been loaded")
+            self.UpdateBookText("Book data has been loaded")
         else:
             gbl_log.error("[CTRL] Unable to find book data, program aborted")
-            UpdateBookText("Unable to load book data. Check the USB stick is inserted")
-            sys.exit()
+            self.UpdateBookText("Unable to load book data. Check the USB stick is inserted and retry")
+            return
         gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
         return
         
@@ -181,7 +185,6 @@ class MouldCapture(Frame):
         """
         Reset the find variable to force clicking on find
         """
-        print("Find Pressed set to False")
         self.find_pressed = False
         return True
 
@@ -223,6 +226,10 @@ class MouldCapture(Frame):
         gbl_log.info("Finding a book")
         gbl_log.debug("Current User:%s" % self.user.get())
         gbl_log.debug("Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
+
+        if len(self.booklist) < 10:
+            self.UpdateBookText("Booklist not loaded, please click load first")
+            return
 
         if self.check_data_entered() == False:
             return
