@@ -152,6 +152,10 @@ class MouldCapture(Frame):
         self.UpdateBookText("Please Select a User and a Date")
 
     def load_bookdata(self):
+        if len(self.booklist) > 1:
+            UpdateBookText("Booklist already loaded, unable to reload, please reboot to reload")
+            return
+        UpdateBookText("Loading Book Data")
         self.booklist = {}
         print("Loading Book Data")
         gbl_log.info("[CTRL] Reading the book data")
@@ -165,12 +169,13 @@ class MouldCapture(Frame):
                     #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
                         #'Title': 'The life and adventures of Martin Chuzzlewit. '}
                     self.booklist[row['Primary other number']] = row
-
+            UpdateBookText("Book data has been loaded")
         else:
             gbl_log.error("[CTRL] Unable to find book data, program aborted")
+            UpdateBookText("Unable to load book data. Check the USB stick is inserted")
             sys.exit()
         gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
-        return bookdata
+        return
         
     def reset_find(self, event):
         """
@@ -342,7 +347,7 @@ def SetupLogging():
 
     return
 
-def LoadData():
+def LoadData_old():
     """
     Load the data from the USB stick
     """
