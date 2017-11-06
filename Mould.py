@@ -72,12 +72,14 @@ class MouldCapture(Frame):
         self.label_text.set("Enter Book info")
 
         self.saved = True
-        self.found = False
+        self.found_in_booklist = False
         self.warned = False
+        self.find_pressed = False
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
         self.user = Combobox(selection_frame, height=10, textvariable=self.user, width=20, values=SS.USERS)
+        self.user.bind("<<ComboboxSelected>>", self.reset_find)
         self.user.grid(row=1, column=0, padx=50)
         self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
         self.press.grid(row=1, column=2, padx=10)
@@ -148,6 +150,14 @@ class MouldCapture(Frame):
                     
         self.UpdateBookText("Please Select a User and a Date")
 
+    def reset_find(self, event):
+        """
+        Reset the find variable to force clicking on find
+        """
+        print("Find Pressed set to False")
+        self.find_pressed = False
+        return True
+
     def clear_checkboxes(self):
         """
         Reset all the checkboxes to un-checked.
@@ -189,11 +199,14 @@ class MouldCapture(Frame):
 
         if self.check_data_entered() == False:
             return
-            
-        if self.saved == False and self.warned == False:
-            self.UpdateBookText("Data not saved, press button again to continue.   Or press Save")
-            self.warned = True
-            return
+
+        if self.find_pressed == True:
+            if self.saved == False and self.warned == False:
+                self.UpdateBookText("Do you want to move away from this book? Press Save or Find to continue.")
+                self.warned = True
+                return
+        else:
+            self.find_pressed = True
 
         logging.info("Finding the Book reference:%s" % (self.press.get()))
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
@@ -202,11 +215,11 @@ class MouldCapture(Frame):
 
         if book_ref in self.booklist:
             gbl_log.info(self.booklist[book_ref])
-            self.found = True
+            self.found_in_booklist = True
             book_info = self.booklist[book_ref]['Primary other number'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
         else:
             book_info = "Reference not found, please record details and continue"
-            self.found = False
+            self.found_in_booklist = False
 
         self.warned = False     # reset it back for the next time
         self.saved= False
@@ -245,6 +258,10 @@ class MouldCapture(Frame):
 
         if len(self.day.get()) < 1 or len(self.month.get()) < 1 or len(self.year.get()) < 1:
             self.UpdateBookText("Please Select a Date")
+
+        if self.find_pressed == False:
+            self.UpdateBookText("Press Find before attempting to save data")
+            return
         
         data_to_save = []
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
@@ -255,7 +272,7 @@ class MouldCapture(Frame):
         data_to_save.append(self.front_board_mould.get())
         data_to_save.append(self.rear_board_mould.get())
         data_to_save.append(self.fore_edge_mould.get())
-        data_to_save.append(self.found)
+        data_to_save.append(self.found_in_booklist)
         data_to_save.append(self.user.get())
         data_to_save.append(self.day.get()+"/"+self.month.get()+"/"+self.year.get())
 
