@@ -78,9 +78,10 @@ class MouldCapture(Frame):
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
+        load_data = Button(selection_frame, text='Load', command=self.load_bookdata).grid(row=1, column=0, padx=0)
         self.user = Combobox(selection_frame, height=10, textvariable=self.user, width=20, values=SS.USERS)
         self.user.bind("<<ComboboxSelected>>", self.reset_find)
-        self.user.grid(row=1, column=0, padx=50)
+        self.user.grid(row=1, column=1, padx=30)
         self.press = Combobox(selection_frame, height=10, textvariable=self.current_press, width=10, values=SS.PRESS_LIST)
         self.press.grid(row=1, column=2, padx=10)
         self.shelf = Combobox(selection_frame, height=10, textvariable=self.current_shelf, width=10, values=SS.SHELF_LIST)
@@ -150,6 +151,27 @@ class MouldCapture(Frame):
                     
         self.UpdateBookText("Please Select a User and a Date")
 
+    def load_bookdata(self):
+        self.booklist = {}
+        print("Loading Book Data")
+        gbl_log.info("[CTRL] Reading the book data")
+        filename = SS.USB_LOCATION + '/' + SS.BOOKFILE_NAME
+        if os.path.isfile(filename):
+            gbl_log.debug("[CTRL] Book File in location:%s" % filename)
+            with open(filename, 'r', errors='replace') as book:
+                #bookdata = csv.DictReader(book)
+                for row in csv.DictReader(book):
+                    # A row of data looks like
+                    #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
+                        #'Title': 'The life and adventures of Martin Chuzzlewit. '}
+                    self.booklist[row['Primary other number']] = row
+
+        else:
+            gbl_log.error("[CTRL] Unable to find book data, program aborted")
+            sys.exit()
+        gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
+        return bookdata
+        
     def reset_find(self, event):
         """
         Reset the find variable to force clicking on find
@@ -355,7 +377,7 @@ def main():
     app = MouldCapture(master=root)
     root.geometry("800x410")
     app.master.title("Mould Capturing Tool")
-    app.BookData(LoadData())
+#    app.BookData(LoadData())
     # do something here
     app.mainloop()
     return
