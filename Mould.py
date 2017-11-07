@@ -100,7 +100,7 @@ class MouldCapture(Frame):
         date_frame = Frame(self, relief='ridge')
         self.date_info = Label(date_frame, relief='sunken', text="Today's Date")
         self.date_info.grid(row=0, column=0)
-        self.day = Combobox(date_frame, textvariable=self.current_day, width=5, height=10, values=SS.DAYS)
+        self.day = Combobox(date_frame, textvariable=self.current_day, width=5, height=5, values=SS.DAYS)
         self.day.grid(row=1, column=0)
         self.month = Combobox(date_frame, textvariable=self.current_month, width=8, height=5, values=SS.MONTHS)
         self.month.grid(row=1, column=1)
