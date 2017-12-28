@@ -36,6 +36,7 @@
 
 from tkinter import *
 from tkinter.ttk import *
+from tkinter import messagebox
 import logging
 import logging.config
 import dict_Logging
@@ -78,6 +79,7 @@ class MouldCapture(Frame):
         self.found_in_booklist = False
         self.warned = False
         self.find_pressed = False
+        self.book_data_correct = False
 
         # Build the Selection row
         selection_frame = Frame(self, relief='ridge')
@@ -200,6 +202,11 @@ class MouldCapture(Frame):
         self.front_board_mould.set(0)
         self.rear_board_mould.set(0)
         self.fore_edge_mould.set(0)
+
+        self.book_data_correct = False
+
+        #TODO: Should I also set self.saved to False here?
+        
         return
 
     def check_data_entered(self):
@@ -264,7 +271,11 @@ class MouldCapture(Frame):
 
         self.clear_checkboxes()
         
-        self.UpdateBookText(book_info)
+        #self.UpdateBookText(book_info)
+        #TODO: Improve this to have a yes / no and capture the info
+        self.book_data_correct = messagebox.askyesno("Book Information", book_info+"\nIs this correct?")
+        self.log.debug("[Mould] Is the Book Information correct:%s" % self.book_data_correct)
+
         return
 
     def BookData(self, booklist):
@@ -294,6 +305,8 @@ class MouldCapture(Frame):
             self.log.debug("[Mould] Data not saved as check data entered failed")
             return
 
+        # TODO: If self.saved is true, wouldn't be it saving a duplicate??
+
         # TODO: I think this code is duplicate of check_data_entered
         if len(self.user.get()) < 1:
             self.UpdateBookText("Please Select a User")
@@ -317,11 +330,12 @@ class MouldCapture(Frame):
         data_to_save.append(self.found_in_booklist)
         data_to_save.append(self.user.get())
         data_to_save.append(self.day.get()+"/"+self.month.get()+"/"+self.year.get())
+        data_to_save.append(self.book_data_correct)
 
         self.log.info("[Mould] Data to be saved to csv:%s" % data_to_save)
 
         write_header = False
-        header = ["Primary other number", "Head", "Spine", "Tail", "Front", "Rear", "Fore", "Found", "User", "Date"]
+        header = ["Primary other number", "Head", "Spine", "Tail", "Front", "Rear", "Fore", "Found", "User", "Date", "Correct"]
         filename = SS.USB_LOCATION + '/' + SS.MOULDDATA_NAME
         if os.path.exists(SS.USB_LOCATION):
             self.log.debug("[Mould] Mould Data File in location:%s" % filename)
