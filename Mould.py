@@ -190,7 +190,7 @@ class MouldCapture(Frame):
         self.log.debug("[Mould] Find Reset")
         self.find_pressed = False
         return True
-
+        
     def clear_checkboxes(self):
         """
         Reset all the checkboxes to un-checked.
@@ -214,15 +214,18 @@ class MouldCapture(Frame):
         Check the necessary fields have been entered
         """
         if len(self.user.get()) < 1:
-            self.UpdateBookText("Please Select a User")
+            messagebox.showwarning("Missing User", "Username has not been selected, please select")
+            #self.UpdateBookText("Please Select a User")
             return False
             
         if len(self.day.get()) < 1 or len(self.month.get()) < 1 or len(self.year.get()) < 1:
-            self.UpdateBookText("Please Select a Date")
+            messagebox.showwarning("Missing Date", "Current date has not been selected, please select")
+            #self.UpdateBookText("Please Select a Date")
             return False
             
         if len(self.press.get()) < 1 or len(self.shelf.get()) < 1 or len(self.position.get()) < 1:
-            self.UpdateBookText("Please select a press, shelf and row first")
+            messagebox.showwarning("Missing book selection", "Please select a press, shelf and row first")
+            #self.UpdateBookText("Please select a press, shelf and row first")
             return False
 
         self.log.info("[Mould] Checking of data has passed successfully")
@@ -238,20 +241,22 @@ class MouldCapture(Frame):
         self.log.debug("[Mould] Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
 
         if len(self.booklist) < 10:
-            self.UpdateBookText("Booklist not loaded, please click load first")
+            messagebox.showwarning("Missing Booklist","Booklist not loaded, please click load first")
+            #self.UpdateBookText("Booklist not loaded, please click load first")
             return
 
         if self.check_data_entered() == False:
             self.log.debug("[Mould] Unable to find book, as the check data entered failed")
             return
 
-        if self.find_pressed == True:
-            if self.saved == False and self.warned == False:
-                self.UpdateBookText("Do you want to move away from this book? Press Save or Find to continue.")
-                self.warned = True
+        if self.saved == False:# and self.warned == False:
+            response = messagebox.askyesno("Data Entered", "Data has been entered since saving, do you want to continue?")
+            if response == False:
+                self.log.debug("[Mould] Returning to the current book to save")
                 return
-        else:
-            self.find_pressed = True
+            else:
+                self.log.debug("[Mould] Current settings are being disregarded and new data found")
+
 
         self.log.info("Finding the Book reference:%s" % (self.press.get()))
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
@@ -271,10 +276,11 @@ class MouldCapture(Frame):
 
         self.clear_checkboxes()
         
-        #self.UpdateBookText(book_info)
-        #TODO: Improve this to have a yes / no and capture the info
+        self.UpdateBookText(book_info)
         self.book_data_correct = messagebox.askyesno("Book Information", book_info+"\nIs this correct?")
         self.log.debug("[Mould] Is the Book Information correct:%s" % self.book_data_correct)
+
+        self.find_pressed = True
 
         return
 
@@ -305,19 +311,19 @@ class MouldCapture(Frame):
             self.log.debug("[Mould] Data not saved as check data entered failed")
             return
 
-        # TODO: If self.saved is true, wouldn't be it saving a duplicate??
-
-        # TODO: I think this code is duplicate of check_data_entered
-        if len(self.user.get()) < 1:
-            self.UpdateBookText("Please Select a User")
-
-        if len(self.day.get()) < 1 or len(self.month.get()) < 1 or len(self.year.get()) < 1:
-            self.UpdateBookText("Please Select a Date")
-
         if self.find_pressed == False:
-            self.UpdateBookText("Press Find before attempting to save data")
+            messagebox.showwarning("Find First", "Please press Find to load book data first")
+            #self.UpdateBookText("Press Find before attempting to save data")
             return
         
+        if self.saved:
+            self.log.info("[Mould] Save has been selected, but save flag is already true")
+            response = messagebox.askyesno("Data Already Saved", "Data has already been saved, do you want to save it again?")
+            if response == False:
+                self.log.debug("[Mould] User selected NOT to resave the data, save cancelled")
+                return
+            self.log.debug("[Mould] User selected TO resave the data, save repeating")
+
         data_to_save = []
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
         data_to_save.append(book_ref)
@@ -355,6 +361,7 @@ class MouldCapture(Frame):
                     self.log.info("[Mould] Record to be written to the Mould Data File:%s" % data_to_save)
                 
             self.saved = True
+            messagebox.showinfo("Data Saved", "Data Record has been saved")
 
         self.clear_checkboxes()
         
