@@ -155,12 +155,12 @@ class MouldCapture(Frame):
         self.pack(fill=BOTH, expand=NO)
                     
         #self.UpdateBookText("Please Select a User and a Date")
-        messagebox.showinfo("Please Load Data, select user and enter date")
+        messagebox.showinfo("Start", "Please \n - Load Data\n - Select User\n - Enter Press / Shelf / Position")
 
     def load_bookdata(self):
         self.log.info("[Mould] Loading Book data stared")
         if len(self.booklist) > 10:
-            response = messagebox.askyesno("Reload Data", "Do you want to reload the book data?"
+            response = messagebox.askyesno("Reload Data", "Do you want to reload the book data?")
             self.log.info("[Mould] Booklist already exists, reload it:%s" % response)
             if response:
                 self.booklist = {}
