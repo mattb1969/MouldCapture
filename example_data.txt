@@ -1,0 +1,15 @@
+{'Location': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS': '3045432',
+    'Title': 'The life and adventures of Martin Chuzzlewit. '}
+{'Location': 'L.3.11', 'Creator': 'Lady Brilliana Harley (1598-1643)', 'CMS': '3083835',
+    'Title': 'Letters of the Lady Brilliana Harley . wife of Sir Robert Harley, of Brampton Bryan, Knight of the Bath with introduction and notes by Thomas Taylor Lewis.'}
+{'Location': 'L.3.12', 'Creator': 'Jean Leonard Borre', 'CMS': '3084963',
+    'Title': "Mode_le d'une e_ducation noble et chre_tienne ..."}
+{'Location': 'L.3.13', 'Creator': 'John Henniker-Major, Baron Henniker-Major (1752-1821)', 'CMS': '3084070',
+ 'Title': 'A letter to George, Earl of Leicester, . president of the Society of Antiquaries, ... read to the Society, Feb. 7, 1788. From John Henniker, ...'}
+
+
+
+bookdata
+('F.1.30', {'Location': 'F.1.30', 'CMS': '3071154', 'Creator': 'William Wake (1657-1737) Archbishop of Canterbury ', 'Title': 'The principles of the Christian religion explained: in a brief commentary upon the church-catechism.'})
+('D.5.5', {'Location': 'D.5.5', 'CMS': '3076329', 'Creator': 'Jane Austen (1775-1817)', 'Title': 'Sense and sensibility: . a novel. By Jane Austen, ...'})
+('J.6.15', {'Location': 'J.6.15', 'CMS': '3089331', 'Creator': 'Philip Miller (1691-1771)', 'Title': 'The abridgement of The gardeners dictionary: . containing the best and newest methods of cultivating and improving the kitchen, fruit, flower garden, and nursery; ... By Philip Miller, F.R.S. ...'})

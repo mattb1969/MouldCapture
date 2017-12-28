@@ -51,7 +51,8 @@ class MouldCapture(Frame):
     def __init__(self, master=None):
         Frame.__init__(self,master)
 
-        gbl_log.info("Starting Main Frame")
+        self.log = logging.getLogger()
+        self.log.info("[Mould] Starting Main Frame")
         # These are the tuples of what is selected in the listbox
         self.current_press = StringVar()
         self.current_shelf = StringVar()
@@ -162,12 +163,11 @@ class MouldCapture(Frame):
             return
         self.UpdateBookText("Loading Book Data")
 
-        gbl_log.info("[CTRL] Reading the book data")
+        self.log.info("[Mould] Reading the book data")
         filename = SS.USB_LOCATION + '/' + SS.BOOKFILE_NAME
         if os.path.isfile(filename):
-            gbl_log.debug("[CTRL] Book File in location:%s" % filename)
+            self.log.debug("[Mould] Book File in location:%s" % filename)
             with open(filename, 'r', errors='replace') as book:
-                #bookdata = csv.DictReader(book)
                 for row in csv.DictReader(book):
                     # A row of data looks like
                     #{'Primary other number': 'L.3.10', 'Creator': 'Charles Dickens (1812-1870).', 'CMS Inventory number': '3045432',
@@ -175,16 +175,17 @@ class MouldCapture(Frame):
                     self.booklist[row['Primary other number']] = row
             self.UpdateBookText("Book data has been loaded")
         else:
-            gbl_log.error("[CTRL] Unable to find book data, program aborted")
+            self.log.error("[Mould] Unable to find book data, contrinuing without")
             self.UpdateBookText("Unable to load book data. Check the USB stick is inserted and retry")
             return
-        gbl_log.info("Number of Book Data Records Loaded:%s" % len(self.booklist))
+        self.log.info("[Mould] Number of Book Data Records Loaded:%s" % len(self.booklist))
         return
         
     def reset_find(self, event):
         """
         Reset the find variable to force clicking on find
         """
+        self.log.debug("[Mould] Find Reset")
         self.find_pressed = False
         return True
 
@@ -192,6 +193,7 @@ class MouldCapture(Frame):
         """
         Reset all the checkboxes to un-checked.
         """
+        self.log.debug("[Mould] Mould checkboxes reset to clear")
         self.head_mould.set(0)
         self.spine_mould.set(0)
         self.tail_mould.set(0)
@@ -216,6 +218,7 @@ class MouldCapture(Frame):
             self.UpdateBookText("Please select a press, shelf and row first")
             return False
 
+        self.log.info("[Mould] Checking of data has passed successfully")
         return True
 
 
@@ -223,15 +226,16 @@ class MouldCapture(Frame):
         """
         Using the data given, find the book in the list and populate the book info box
         """
-        gbl_log.info("Finding a book")
-        gbl_log.debug("Current User:%s" % self.user.get())
-        gbl_log.debug("Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
+        self.log.info("[Mould] Finding a book")
+        self.log.debug("[Mould] Current User:%s" % self.user.get())
+        self.log.debug("[Mould] Current Date:%s/%s/%s" % (self.day.get(),self.month.get(), self.year.get()))
 
         if len(self.booklist) < 10:
             self.UpdateBookText("Booklist not loaded, please click load first")
             return
 
         if self.check_data_entered() == False:
+            self.log.debug("[Mould] Unable to find book, as the check data entered failed")
             return
 
         if self.find_pressed == True:
@@ -242,13 +246,13 @@ class MouldCapture(Frame):
         else:
             self.find_pressed = True
 
-        logging.info("Finding the Book reference:%s" % (self.press.get()))
+        self.log.info("Finding the Book reference:%s" % (self.press.get()))
         book_ref = self.press.get() + '.' + self.shelf.get() + '.' + self.position.get()
      
         self.UpdateBookText("Finding Book:%s" % book_ref)
 
         if book_ref in self.booklist:
-            gbl_log.info(self.booklist[book_ref])
+            self.log.info("[Mould] booklist:\n%s " % self.booklist[book_ref])
             self.found_in_booklist = True
             book_info = self.booklist[book_ref]['Primary other number'] +"\n" + self.booklist[book_ref]['Title'] + "\n" + self.booklist[book_ref]['Creator']        #if self.booklist[book_ref]
         else:
@@ -273,20 +277,24 @@ class MouldCapture(Frame):
 
     def UpdateBookText(self, information):
         """
-        Repalce the existing text in the book text box and reaplce it with information
+        Replace the existing text in the book text box and replace it with information
         """
        
-        logging.info("Text to be added into the Book Text Box:%s" % information)
+        self.log.info("[Mould] Text to be added into the Book Text Box:%s" % information)
         self.label_text.set(information)
         return     
 
     def save_data(self):
-        # called on click on save
-        # needs to capture the values annd save them to the csv file.
-
+        """
+        Called on click on save
+        Needs to capture the values annd save them to the csv file.
+        """
+        self.log.info("[Mould] Saving data started")
         if self.check_data_entered() == False:
+            self.log.debug("[Mould] Data not saved as check data entered failed")
             return
-            
+
+        # TODO: I think this code is duplicate of check_data_entered
         if len(self.user.get()) < 1:
             self.UpdateBookText("Please Select a User")
 
@@ -310,22 +318,27 @@ class MouldCapture(Frame):
         data_to_save.append(self.user.get())
         data_to_save.append(self.day.get()+"/"+self.month.get()+"/"+self.year.get())
 
-        logging.info("Data to be saved to csv:%s" % data_to_save)
+        self.log.info("[Mould] Data to be saved to csv:%s" % data_to_save)
 
         write_header = False
         header = ["Primary other number", "Head", "Spine", "Tail", "Front", "Rear", "Fore", "Found", "User", "Date"]
         filename = SS.USB_LOCATION + '/' + SS.MOULDDATA_NAME
         if os.path.exists(SS.USB_LOCATION):
-            logging.debug("[CTRL] Book File in location:%s" % filename)
+            self.log.debug("[Mould] Mould Data File in location:%s" % filename)
             if os.path.isfile(filename) == False:
                 # File doesn't exist, create header row
+                self.log.debug("[Mould] Mould Data File doesn't exist, creating header flag set")
                 write_header = True
+
             with open(filename, mode='a', newline='') as csvfile:
                     record = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    self.log.info("[Mould] Record opened to be written to:%s" % record)
                     if write_header == True:
+                        self.log.debug("[Mould] Header information missing, creating")
                         record.writerow(header)
                         write_header=False
                     record.writerow(data_to_save)
+                    self.log.info("[Mould] Record to be written to the Mould Data File:%s" % data_to_save)
                 
             self.saved = True
 
@@ -335,7 +348,7 @@ class MouldCapture(Frame):
         
     def exit_program(self):
         # called form the capture button
-        logging.debug("Exiting Program")
+        self.log.info("Exiting Program")
         exit()
         return
         
@@ -344,13 +357,12 @@ def SetupLogging():
     Setup the logging defaults
     Using the logger function to span multiple files.
     """
-    global gbl_log
     # Create a logger with the name of the function
     logging.config.dictConfig(dict_Logging.log_cfg)
     gbl_log = logging.getLogger()
 
     gbl_log.info("\n\n")
-    gbl_log.info("[CTRL] Logging Started, current level is %s" % gbl_log.getEffectiveLevel())
+    gbl_log.info("[Mould] Logging Started, current level is %s" % gbl_log.getEffectiveLevel())
 
     return
 
@@ -360,10 +372,10 @@ def LoadData_old():
     """
     bookdata = {}
     print("Loading Book Data")
-    gbl_log.info("[CTRL] Reading the book data")
+    gbl_log.info("[Mould] Reading the book data")
     filename = SS.USB_LOCATION + '/' + SS.BOOKFILE_NAME
     if os.path.isfile(filename):
-        gbl_log.debug("[CTRL] Book File in location:%s" % filename)
+        gbl_log.debug("[Mould] Book File in location:%s" % filename)
         with open(filename, 'r', errors='replace') as book:
             #bookdata = csv.DictReader(book)
             for row in csv.DictReader(book):
@@ -373,7 +385,7 @@ def LoadData_old():
                 bookdata[row['Primary other number']] = row
 
     else:
-        gbl_log.error("[CTRL] Unable to find book data, program aborted")
+        gbl_log.error("[Mould] Unable to find book data, program aborted")
         sys.exit()
     gbl_log.info("Number of Book Data Records Loaded:%s" % len(bookdata))
     return bookdata
