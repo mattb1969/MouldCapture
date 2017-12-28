@@ -29,10 +29,7 @@
 #  
 #
 
-#TODO: After save, clear all the mould settings
-#TODO: Show the date on screen
 #TODO: Make all the buttons bigger
-#TODO: Add descriptions to whatn is held in the text box, e.g. Location: Title: Creator:
 
 from tkinter import *
 from tkinter.ttk import *
@@ -157,12 +154,20 @@ class MouldCapture(Frame):
         # Put it all together on the screen
         self.pack(fill=BOTH, expand=NO)
                     
-        self.UpdateBookText("Please Select a User and a Date")
+        #self.UpdateBookText("Please Select a User and a Date")
+        messagebox.showinfo("Please Load Data, select user and enter date")
 
     def load_bookdata(self):
+        self.log.info("[Mould] Loading Book data stared")
         if len(self.booklist) > 10:
-            self.UpdateBookText("Booklist already loaded, unable to reload, please reboot to reload")
-            return
+            response = messagebox.askyesno("Reload Data", "Do you want to reload the book data?"
+            self.log.info("[Mould] Booklist already exists, reload it:%s" % response)
+            if response:
+                self.booklist = {}
+            #self.UpdateBookText("Booklist already loaded, unable to reload, please reboot to reload")
+            else:
+                return
+
         self.UpdateBookText("Loading Book Data")
 
         self.log.info("[Mould] Reading the book data")
@@ -178,7 +183,8 @@ class MouldCapture(Frame):
             self.UpdateBookText("Book data has been loaded")
         else:
             self.log.error("[Mould] Unable to find book data, contrinuing without")
-            self.UpdateBookText("Unable to load book data. Check the USB stick is inserted and retry")
+            messagebox.showwarning("Unable to load", "Unable to load book data. Check the USB stick is inserted and retry")
+            #self.UpdateBookText("Unable to load book data. Check the USB stick is inserted and retry")
             return
         self.log.info("[Mould] Number of Book Data Records Loaded:%s" % len(self.booklist))
         return
@@ -275,9 +281,13 @@ class MouldCapture(Frame):
         self.saved= False
 
         self.clear_checkboxes()
-        
+
+        if self.found_in_booklist:
+            self.book_data_correct = messagebox.askyesno("Book Information", book_info+"\nIs this correct?")
+        else:
+            self.book_data_correct = False
+            messagebox.showinfo("Book data not found, please record and continue")
         self.UpdateBookText(book_info)
-        self.book_data_correct = messagebox.askyesno("Book Information", book_info+"\nIs this correct?")
         self.log.debug("[Mould] Is the Book Information correct:%s" % self.book_data_correct)
 
         self.find_pressed = True
