@@ -155,7 +155,7 @@ class MouldCapture(Frame):
         self.pack(fill=BOTH, expand=NO)
                     
         #self.UpdateBookText("Please Select a User and a Date")
-        messagebox.showinfo("Start", "Please \n - Load Data\n - Select User\n - Enter Press / Shelf / Position")
+        messagebox.showinfo("Start", "Please \n - Click on 'Load' Data\n - Select a User\n - Enter the Press / Shelf / Position")
 
     def load_bookdata(self):
         self.log.info("[Mould] Loading Book data stared")
@@ -286,7 +286,7 @@ class MouldCapture(Frame):
             self.book_data_correct = messagebox.askyesno("Book Information", book_info+"\nIs this correct?")
         else:
             self.book_data_correct = False
-            messagebox.showinfo("Book data not found, please record and continue")
+            messagebox.showinfo("Missing book data", "Book data not found, please record and continue")
         self.UpdateBookText(book_info)
         self.log.debug("[Mould] Is the Book Information correct:%s" % self.book_data_correct)
 
